@@ -13,10 +13,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 import model.GitHubUsers;
 import okhttp3.HttpUrl;
@@ -32,7 +34,7 @@ public class UserActivity extends AppCompatActivity {
 
 
     ImageView userImg;
-    TextView usname, seguidores, siguiendo, email;
+    TextView login, usname, seguidores, siguiendo, email;
     Button rePositorios;
 
     Bundle extras;
@@ -44,6 +46,7 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
+        login = findViewById(R.id.login);
         userImg = findViewById(R.id.userimg);
         usname = findViewById(R.id.et_username);
         seguidores = findViewById(R.id.seguidores);
@@ -76,10 +79,14 @@ public class UserActivity extends AppCompatActivity {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
                 InputStream inputStream = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeByteArray()
+                Bitmap myBitmap = BitmapFactory.decodeStream(inputStream);
+                return myBitmap;
             }catch (MalformedURLException e){
                 e.printStackTrace();
+            }catch (IOException e){
+                e.printStackTrace();
             }
+            return null;
         }
     }
 
@@ -91,11 +98,41 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<GitHubUsers> call, Response<GitHubUsers> response) {
                 ImageDownloader task  = new ImageDownloader();
+
+                try {
+                    miimg  = task.execute(response.body().getUserImg()).get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                userImg.setImageBitmap(miimg);
+                userImg.getLayoutParams().height = 220;
+                userImg.getLayoutParams().width = 220;
+
+
+                if (response.body().getUsname() == null){
+                    usname.setText("No hay nombre ");
+                }else{
+                    usname.setText("Nombre de usuario: "+ response.body().getUsname());
+                }
+
+                seguidores.setText(("Seguidores: "+ response.body().getSeguidores()));
+                siguiendo.setText(("Siguiendo: "+ response.body().getSiguiendo()));
+                login.setText(("Seguidores: "+ response.body().getLogin()));
+
+                if(response.body().getEmail() == null){
+                    email.setText(("No email"));
+                }else{
+                    email.setText("Email: "+ response.body().getEmail());
+                }
+
             }
 
             @Override
             public void onFailure(Call<GitHubUsers> call, Throwable t) {
-
+                System.out.println("Failed!" + t.toString());
             }
         });
     }

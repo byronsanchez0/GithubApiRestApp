@@ -15,14 +15,19 @@ public class GitHubUsers {
     @SerializedName("siguiendo")
     private String siguiendo;
 
+    @SerializedName("userImg")
+    private String userImg;
+
     @SerializedName("email")
     private String email;
 
-    public GitHubUsers(String login, String usname, String seguidores, String siguiendo, String email) {
+
+    public GitHubUsers(String login, String usname, String seguidores, String siguiendo, String userImg, String email) {
         this.login = login;
         this.usname = usname;
         this.seguidores = seguidores;
         this.siguiendo = siguiendo;
+        this.userImg = userImg;
         this.email = email;
     }
 
@@ -56,6 +61,14 @@ public class GitHubUsers {
 
     public void setSiguiendo(String siguiendo) {
         this.siguiendo = siguiendo;
+    }
+
+    public String getUserImg() {
+        return userImg;
+    }
+
+    public void setUserImg(String userImg) {
+        this.userImg = userImg;
     }
 
     public String getEmail() {
