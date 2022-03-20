@@ -7,6 +7,6 @@ import retrofit2.http.Path;
 //esto es una interface
 public interface GithubUserEndPoint {
 
-    @GET("/user/{users}")
+    @GET("/users/{user}")
     Call<GitHubUsers> getUser(@Path("user") String user);
 }

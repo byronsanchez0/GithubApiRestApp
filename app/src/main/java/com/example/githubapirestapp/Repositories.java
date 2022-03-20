@@ -54,22 +54,26 @@ public class Repositories extends AppCompatActivity {
 
     private void loadRepositories(){
         GitHubRepoEndPoint  apiService = ApiClient.getClient().create(GitHubRepoEndPoint.class);
+        try {
+            Call<List<GitHubRepo>> call = apiService.getRepo(recievedUserName);
+            call.enqueue(new Callback<List<GitHubRepo>>() {
+                @Override
+                public void onResponse(Call<List<GitHubRepo>> call, Response<List<GitHubRepo>> response) {
+                    mDataSource.clear();
+                    mDataSource.addAll(response.body());
+                    mAdapter.notifyDataSetChanged();
+                }
 
-        Call<List<GitHubRepo>> call = apiService.getRepo(recievedUserName);
-        call.enqueue(new Callback<List<GitHubRepo>>() {
-            @Override
-            public void onResponse(Call<List<GitHubRepo>> call, Response<List<GitHubRepo>> response) {
-                mDataSource.clear();
-                mDataSource.addAll(response.body());
-                mAdapter.notifyDataSetChanged();
-            }
+                @Override
+                public void onFailure(Call<List<GitHubRepo>> call, Throwable t) {
+                    Log.d("Repos", t.toString());
 
-            @Override
-            public void onFailure(Call<List<GitHubRepo>> call, Throwable t) {
-                Log.d("Repos", t.toString());
+                }
+            });
+        } catch (Exception e) {
+            Log.d("FALLO0 ", e.toString());
+        }
 
-            }
-        });
 
     }
 }
