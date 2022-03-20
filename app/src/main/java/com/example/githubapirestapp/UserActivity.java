@@ -101,9 +101,7 @@ public class UserActivity extends AppCompatActivity {
 
                 try {
                     miimg  = task.execute(response.body().getUserImg()).get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
 
